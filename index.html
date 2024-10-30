@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>CodePen - X tweet Gen  V1</title>
+  
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake Tweet Generator</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #f7f9fc; color: #333; flex-direction: column; padding: 20px; }
+        .container { width: 100%; max-width: 400px; text-align: center; background-color: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); margin-bottom: 20px; }
+        .tweet { width: 100%; max-width: 500px; background-color: #ffffff; border: 1px solid #e1e8ed; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); margin: 20px 0; overflow: hidden; position: relative; transition: height 0.2s ease; }
+        .tweet-header { display: flex; align-items: center; margin-bottom: 10px; }
+        .profile-pic { width: 50px; height: 50px; border-radius: 50%; background-color: #ccc; overflow: hidden; margin-right: 10px; }
+        .profile-pic img { width: 100%; height: 100%; object-fit: cover; }
+        .tweet-text { font-size: 16px; text-align: left; color: #14171a; line-height: 1.5; word-wrap: break-word; }
+        .name { font-weight: bold; color: #14171a; font-size: 15px; }
+        .handle { color: #657786; font-size: 14px; }
+        .attached-image { margin-top: 10px; border-radius: 10px; overflow: hidden; }
+        .attached-image img { width: 100%; border-radius: 10px; }
+        .controls { display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 20px; }
+        .controls label { font-size: 14px; font-weight: 500; color: #555; margin-top: 10px; }
+        .controls input[type="text"], .controls textarea, .controls select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #e1e8ed; border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.3s; }
+        .controls input[type="text"]:focus, .controls textarea:focus, .controls select:focus { border-color: #1da1f2; }
+        .upload-btn { background-color: #1da1f2; color: #fff; padding: 10px 20px; border-radius: 50px; font-size: 14px; cursor: pointer; transition: background-color 0.3s, transform 0.2s; display: inline-block; text-align: center; margin: 10px 0; }
+        .upload-btn:hover { background-color: #0a85d9; transform: translateY(-2px); }
+        .download-btn { background-color: #1da1f2; color: #fff; border: none; padding: 12px 25px; font-size: 16px; border-radius: 50px; cursor: pointer; margin-top: 15px; transition: background-color 0.3s, transform 0.2s; }
+        .download-btn:hover { background-color: #0a85d9; transform: translateY(-2px); }
+        .footer { font-size: 14px; color: #657786; margin-top: 20px; text-align: center; }
+        .footer a { color: #1da1f2; text-decoration: none; }
+        @media (max-width: 400px) { .container { width: 100%; padding: 10px; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Fake Tweet Generator</h2>
+    <div class="controls">
+        <label for="profilePicInput">Profile Picture</label>
+        <label class="upload-btn">
+            Upload Profile
+            <input type="file" accept="image/*" id="profilePicInput" onchange="loadProfilePic(event)" style="display: none;">
+        </label>
+
+        <label for="nameInput">Name</label>
+        <input type="text" id="nameInput" placeholder="Name">
+
+        <label for="handleInput">Handle</label>
+        <input type="text" id="handleInput" placeholder="Handle (e.g., @username)">
+
+        <label for="tweetTextInput">Tweet Content</label>
+        <textarea id="tweetTextInput" placeholder="What's happening?" rows="3"></textarea>
+
+        <label for="backgroundSelect">Background</label>
+        <select id="backgroundSelect" onchange="changeBackground(event)">
+            <option value="#ffffff">White</option>
+            <option value="#f7f9fc">Light Gray</option>
+            <option value="#e1e8ed">Gray</option>
+        </select>
+
+        <label for="attachedImageInput">Attached Image (Optional)</label>
+        <label class="upload-btn">
+            Upload Image
+            <input type="file" accept="image/*" id="attachedImageInput" onchange="loadAttachedImage(event)" style="display: none;">
+        </label>
+    </div>
+
+    <div class="tweet" id="tweetPreview">
+        <div class="tweet-header">
+            <div class="profile-pic" id="profilePic"></div>
+            <div>
+                <span class="name" id="namePreview">Name</span>
+                <span class="handle" id="handlePreview">@handle</span>
+            </div>
+        </div>
+        <div class="tweet-text" id="tweetTextPreview">What's happening?</div>
+        <div class="attached-image" id="attachedImage"></div>
+    </div>
+
+    <button class="download-btn" onclick="downloadTweet()">Download Tweet</button>
+</div>
+
+<div class="footer">
+    <p>Follow me on <a href="https://twitter.com/Rajasf2r" target="_blank">@Rajasf2r</a></p>
+    <p>For support, contact: <a href="mailto:10xbuildteam@gmail.com">10xbuildteam@gmail.com</a></p>
+</div>
+
+<script>
+    // Function to load profile picture
+    function loadProfilePic(event) {
+        const profilePic = document.getElementById('profilePic');
+        profilePic.innerHTML = `<img src="${URL.createObjectURL(event.target.files[0])}" alt="Profile Picture">`;
+    }
+
+    // Function to update name
+    document.getElementById('nameInput').addEventListener('input', function() {
+        document.getElementById('namePreview').innerText = this.value || 'Name';
+    });
+
+    // Function to update handle
+    document.getElementById('handleInput').addEventListener('input', function() {
+        document.getElementById('handlePreview').innerText = this.value || '@handle';
+    });
+
+    // Function to update tweet text and adjust height
+    document.getElementById('tweetTextInput').addEventListener('input', function() {
+        document.getElementById('tweetTextPreview').innerText = this.value || "What's happening?";
+        adjustTweetHeight();
+    });
+
+    // Function to change background color
+    function changeBackground(event) {
+        document.getElementById('tweetPreview').style.backgroundColor = event.target.value;
+    }
+
+    // Function to load attached image
+    function loadAttachedImage(event) {
+        const attachedImage = document.getElementById('attachedImage');
+        attachedImage.innerHTML = `<img src="${URL.createObjectURL(event.target.files[0])}" alt="Attached Image">`;
+    }
+
+    // Function to adjust tweet height based on content
+    function adjustTweetHeight() {
+        const tweetPreview = document.getElementById('tweetPreview');
+        tweetPreview.style.height = 'auto';
+        tweetPreview.style.height = `${tweetPreview.scrollHeight}px`;
+    }
+
+    // Function to download tweet as image
+    function downloadTweet() {
+        html2canvas(document.getElementById('tweetPreview')).then(canvas => {
+            let link = document.createElement('a');
+            link.download = 'fake_tweet.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+    }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+</body>
+</html>
+<!-- partial -->
+  
+</body>
+</html>
